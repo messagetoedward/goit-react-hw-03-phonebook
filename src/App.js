@@ -7,10 +7,10 @@ import { ContactList } from "./components/ContactList";
 export class App extends React.Component {
   state = {
     contacts: [
-      { id: "id-1", name: "Rosie Simpson", number: "459-12-56" },
-      { id: "id-2", name: "Hermione Kline", number: "443-89-12" },
-      { id: "id-3", name: "Eden Clements", number: "645-17-79" },
-      { id: "id-4", name: "Annie Copeland", number: "227-91-26" },
+      // { id: "id-1", name: "Rosie Simpson", number: "459-12-56" },
+      // { id: "id-2", name: "Hermione Kline", number: "443-89-12" },
+      // { id: "id-3", name: "Eden Clements", number: "645-17-79" },
+      // { id: "id-4", name: "Annie Copeland", number: "227-91-26" },
     ],
     filter: "",
   };
@@ -50,15 +50,31 @@ export class App extends React.Component {
     );
   };
 
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.contacts !== prevState.contacts) {
+      console.log("updated contacts");
+      localStorage.setItem("contacts", JSON.stringify(this.state.contacts));
+    }
+  }
+
+  componentDidMount() {
+    const contacts = localStorage.getItem("contacts");
+    const parsedContctas = JSON.parse(contacts);
+    if (parsedContctas) {
+      this.setState({ contacts: parsedContctas });
+    }
+    console.log(parsedContctas);
+  }
+
   render() {
-    const { contacts, filter } = this.state;
+    const { filter } = this.state;
     const filteredContacts = this.getFilteredContacts();
     return (
       <div>
         <ContactForm onAdd={this.addContact} />
         <ContactFilter filter={filter} onSearch={this.filterContacts} />
         <div>
-          <p>Total Contacts:{contacts.length}</p>
+          <p>Total Contacts:{filteredContacts.length}</p>
         </div>
         <ContactList contacts={filteredContacts} onClick={this.deleteContact} />
       </div>
